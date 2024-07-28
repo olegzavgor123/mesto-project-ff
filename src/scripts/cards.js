@@ -30,3 +30,5 @@ const initialCards = [
       alt: "Картинка Байкала",
     }
 ];
+
+export {initialCards}
