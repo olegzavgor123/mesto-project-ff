@@ -1,5 +1,5 @@
 import { initialCards } from './cards.js'
-import { createCard, deleteCard, likeCard, popImage } from './card.js'
+import { createCard, deleteCard, likeCard, openPopImage } from './card.js'
 import { openPopup, closePopup } from './modal.js'
 import '../pages/index.css';
 
@@ -7,7 +7,7 @@ const container = document.querySelector('.places__list');
 
 
 initialCards.forEach((item) => {
-  container.append(createCard(item.name, item.link, item.alt, deleteCard, likeCard, popImage));
+  container.append(createCard(item.name, item.link, item.alt, deleteCard, likeCard, openPopImage));
 })
 
 
@@ -15,19 +15,19 @@ initialCards.forEach((item) => {
 
 const editPopup = document.querySelector('.popup_type_edit');
 const editButton = document.querySelector('.profile__edit-button');
-const popup = document.querySelectorAll('.popup');
+const popups = document.querySelectorAll('.popup');
 
 
 //Закрытие попапа по крестику
-const popupClose = document.querySelectorAll('.popup__close');
-popupClose.forEach((closeTag)=> {
+const popupsClose = document.querySelectorAll('.popup__close');
+popupsClose.forEach((closeTag)=> {
   const popup = closeTag.closest('.popup');
   closeTag.addEventListener('click', () => closePopup(popup));
 })
 
 
 //Закрытие попапа по оверлэю
-popup.forEach((popupOverlay)=> {
+popups.forEach((popupOverlay)=> {
   popupOverlay.addEventListener('click', (evt)=> {
     if (evt.target === popupOverlay){
       const popup = popupOverlay.closest('.popup')
@@ -42,8 +42,8 @@ editButton.addEventListener('click', ()=> {openPopup(editPopup)});
 
 
 //Имя и описание по умолчанию
-let userName = document.querySelector('.profile__title').textContent;
-let userDesc = document.querySelector('.profile__description').textContent;
+const userName = document.querySelector('.profile__title').textContent;
+const userDesc = document.querySelector('.profile__description').textContent;
 
 const editForm = document.forms.editprofile;
 editForm.elements.name.value = userName;
@@ -54,14 +54,14 @@ editForm.elements.description.value = userDesc;
 const nameInput = editForm.elements.name;
 const jobInput = editForm.elements.description;
 
-function handleFormSubmit(evt) {
+function editFormSubmit(evt) {
   evt.preventDefault(); 
   document.querySelector('.profile__title').textContent = nameInput.value;
   document.querySelector('.profile__description').textContent = jobInput.value;
 }
 
 editForm.addEventListener('submit', (evt) => {
-  handleFormSubmit(evt);
+  editFormSubmit(evt);
   closePopup(editPopup);
 })
 
@@ -86,7 +86,7 @@ addCardForm.addEventListener('submit', (evt)=> {
     name: nameCard,
     link: link
   })
-  container.prepend(createCard(nameCard,link, '', deleteCard))
+  container.prepend(createCard(nameCard,link, '', deleteCard, likeCard, openPopImage))
   closePopup(popupNewCard);
   addCardForm.elements.placename.value = '';
   addCardForm.elements.link.value = '';

@@ -1,10 +1,11 @@
 import { openPopup } from "./modal";
 
-function createCard (name, link, alt, deleteCard, likeCard, popImage){
+function createCard (name, link, alt, deleteCard, likeCard, openPopImage){
   const cardTemplate = document.querySelector('#card-template').content;
   const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true);
-  cardElement.querySelector('.card__image').src = link;
-  cardElement.querySelector('.card__image').alt = alt;
+  const cardImage = cardElement.querySelector('.card__image');
+  cardImage.src = link;
+  cardImage.alt = alt;
   cardElement.querySelector('.card__title').textContent = name;
   const deleteButton = cardElement.querySelector('.card__delete-button'); 
   deleteButton.addEventListener('click', () => { deleteCard(cardElement) });
@@ -12,8 +13,8 @@ function createCard (name, link, alt, deleteCard, likeCard, popImage){
   const cardLikeButton = cardElement.querySelector('.card__like-button');
   cardLikeButton.addEventListener('click', ()=> {likeCard(cardLikeButton)})
 
-  const cardImageButton = cardElement.querySelector('.card__image');
-  cardImageButton.addEventListener('click', ()=> {popImage(link, name)});
+  const cardImageButton = cardImage;
+  cardImageButton.addEventListener('click', ()=> {openPopImage(link, name)});
 
   return cardElement;
 }
@@ -32,13 +33,13 @@ function likeCard(card){
 }
 
 //Попап картинки
-function popImage(link, desc){
+function openPopImage(link, desc){
   const popupTypeImage = document.querySelector('.popup_type_image');
   popupTypeImage.querySelector('.popup__image').src = link;
   popupTypeImage.querySelector('.popup__caption').textContent = desc;
+  popupTypeImage.querySelector('.popup__image').alt = desc;
   openPopup(popupTypeImage);
 }
 
 
-
-export {createCard, deleteCard, likeCard, popImage}
+export {createCard, deleteCard, likeCard, openPopImage}
