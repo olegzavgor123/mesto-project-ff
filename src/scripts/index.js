@@ -1,7 +1,7 @@
 import { initialCards } from './cards.js'
 import { createCard, deleteCard, likeCard } from './card.js'
 import { openPopup, closePopup } from './modal.js'
-import {enableValidation, setEventListener, checkInputValidation, showInputError, hideInputError} from './validation.js'
+import {enableValidation, hideInputError, validationConfig} from './validation.js'
 import '../pages/index.css';
 
 const container = document.querySelector('.places__list');
@@ -51,8 +51,8 @@ popups.forEach((popupOverlay)=> {
 editButton.addEventListener('click', ()=> {
   editForm.elements.name.value = userName.textContent;
   editForm.elements.description.value = userDesc.textContent;
-  hideInputError(editForm, editForm.elements.name);
-  hideInputError(editForm, editForm.elements.description);
+  hideInputError(editForm, editForm.elements.name, validationConfig);
+  hideInputError(editForm, editForm.elements.description, validationConfig);
   openPopup(editPopup)
 });
 
@@ -74,9 +74,12 @@ editForm.addEventListener('submit', (evt) => {
 //Открытие формы добавления карточки
 const addButton = document.querySelector('.profile__add-button');
 const popupNewCard = document.querySelector('.popup_type_new-card');
+const newCardForm = document.forms.newplace;
 addButton.addEventListener('click', () => {
-  hideInputError(popupNewCard, popupNewCard.elements.placename);
-  hideInputError(popupNewCard, popupNewCard.elements.link);
+  newCardForm.elements.placename.value = '';
+  newCardForm.elements.link.value = '';
+  hideInputError(newCardForm, newCardForm.elements.placename, validationConfig);
+  hideInputError(newCardForm, newCardForm.elements.link, validationConfig);
   openPopup(popupNewCard);
 })
 

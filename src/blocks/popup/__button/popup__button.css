@@ -20,7 +20,9 @@
 }
 
 .button_inactive {
-  background: #eee;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  color: #e5e5e5;
 }
 
 @media screen and (max-width: 568px) {

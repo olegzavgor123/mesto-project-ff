@@ -58,7 +58,10 @@
           <input type="text" id="card-name-input" name="placename" class="popup__input popup__input_type_card-name" placeholder="Название" pattern="^[a-zA-Zа-яА-ЯёЁ \-]+$" data-error="Разрешены только латинские и кириллические буквы, пробелы и дефис" minlength="2" maxlength="40" required>
           <span class="form__input-error card-name-input-error"></span>
         </label>
-        <input type="url" name="link" class="popup__input popup__input_type_url" placeholder="Ссылка на картинку" required>
+        <label class="form__field">
+          <input type="url" id="card-url-input" name="link" class="popup__input popup__input_type_url" placeholder="Ссылка на картинку" required>
+          <span class="form__input-error card-url-input-error"></span>
+        </label>
         <button type="submit" class="button popup__button">Сохранить</button>
       </form>
     </div>
