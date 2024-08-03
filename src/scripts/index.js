@@ -1,6 +1,7 @@
 import { initialCards } from './cards.js'
 import { createCard, deleteCard, likeCard } from './card.js'
 import { openPopup, closePopup } from './modal.js'
+import {enableValidation, setEventListener, checkInputValidation, showInputError, hideInputError} from './validation.js'
 import '../pages/index.css';
 
 const container = document.querySelector('.places__list');
@@ -50,6 +51,8 @@ popups.forEach((popupOverlay)=> {
 editButton.addEventListener('click', ()=> {
   editForm.elements.name.value = userName.textContent;
   editForm.elements.description.value = userDesc.textContent;
+  hideInputError(editForm, editForm.elements.name);
+  hideInputError(editForm, editForm.elements.description);
   openPopup(editPopup)
 });
 
@@ -72,6 +75,8 @@ editForm.addEventListener('submit', (evt) => {
 const addButton = document.querySelector('.profile__add-button');
 const popupNewCard = document.querySelector('.popup_type_new-card');
 addButton.addEventListener('click', () => {
+  hideInputError(popupNewCard, popupNewCard.elements.placename);
+  hideInputError(popupNewCard, popupNewCard.elements.link);
   openPopup(popupNewCard);
 })
 
@@ -100,51 +105,4 @@ function openPopImage(link, desc){
 
 
 //7 sprint
-
-//Проходим по всем формам
-function enableValidation() {
-  const formList = Array.from(document.forms);
-  formList.forEach((formElem)=> {
-    formElem.addEventListener('submit', (evt)=> {
-      evt.preventDefault();
-    });
-    setEventListener(formElem)
-  })
-}
-
-//Слушатель на каждый инпут
-function setEventListener(formElem) {
-  const inputList = Array.from(formElem.querySelectorAll('.popup__input'));
-  inputList.forEach((input)=> {
-    input.addEventListener('input', ()=> {
-      checkInputValidation(formElem, input);
-    })
-  })
-}
-
-//Проверка валидации инпутов
-function checkInputValidation(formElement, inputElement) {
-  if (!inputElement.validity.valid) {
-    showInputError(formElement, inputElement, inputElement.validationMessage)
-  } else  {
-    hideInputError(formElement, inputElement);
-  }
-}
-
-//Показать ошибку
-function showInputError(formElement, inputElement, errorMessage){
-  const errorElem = formElement.querySelector(`.${inputElement.id}-error`);
-  errorElem.textContent = errorMessage;
-  inputElement.classList.add('form__input_type_error');
-  errorElem.classList.add('.form__input-error_active');
-}
-
-//Скрыть ошибку
-function hideInputError(formElement, inputElement) {
-  const errorElem = formElement.querySelector(`.${inputElement.id}-error`);
-  errorElem.textContent = '';
-  inputElement.classList.remove('form__input_type_error');
-  errorElem.classList.remove('.form__input-error_active');
-}
-
 enableValidation();
