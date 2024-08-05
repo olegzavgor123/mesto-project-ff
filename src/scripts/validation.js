@@ -79,12 +79,15 @@ function toggleButtonState(inputList, buttonElement, settings) {
   }
 }
 
-// function clearValidation(profileForm, validationConfig) {
 
-// }
+//Очистка ошибок и инпутов
+function clearValidation(formElement, settings) {
+  const inputList = Array.from(formElement.querySelectorAll(settings.inputSelector))
+  const buttonElement = formElement.querySelector(settings.submitButtonSelector)
+  inputList.forEach((inputElement) => {
+    hideInputError(formElement, inputElement, settings);
+  })
+  toggleButtonState(inputList, buttonElement, settings);
+}
 
-
-  
-enableValidation(validationConfig);
-
-export {validationConfig, enableValidation, setEventListener, checkInputValidation, showInputError, hideInputError}
+export {clearValidation ,validationConfig, enableValidation, setEventListener, checkInputValidation, showInputError, hideInputError}

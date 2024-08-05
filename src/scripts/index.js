@@ -1,7 +1,8 @@
 import { initialCards } from './cards.js'
 import { createCard, deleteCard, likeCard } from './card.js'
 import { openPopup, closePopup } from './modal.js'
-import {enableValidation, hideInputError, validationConfig} from './validation.js'
+import {enableValidation, validationConfig, clearValidation} from './validation.js'
+import { patchProfile, cohortId, token } from './api.js'
 import '../pages/index.css';
 
 const container = document.querySelector('.places__list');
@@ -17,9 +18,9 @@ const editForm = document.forms.editprofile;
 const nameInput = editForm.elements.name;
 const jobInput = editForm.elements.description;
 
-initialCards.forEach((item) => {
-  container.append(createCard(item.name, item.link, item.alt, deleteCard, likeCard, openPopImage));
-})
+// initialCards.forEach((item) => {
+//   container.append(createCard(item.name, item.link, item.alt, deleteCard, likeCard, openPopImage));
+// })
 
 
 //6 sprint
@@ -51,8 +52,7 @@ popups.forEach((popupOverlay)=> {
 editButton.addEventListener('click', ()=> {
   editForm.elements.name.value = userName.textContent;
   editForm.elements.description.value = userDesc.textContent;
-  hideInputError(editForm, editForm.elements.name, validationConfig);
-  hideInputError(editForm, editForm.elements.description, validationConfig);
+  clearValidation(editForm, validationConfig)
   openPopup(editPopup)
 });
 
@@ -63,6 +63,7 @@ function handleProfileFormSubmit(evt) {
   evt.preventDefault(); 
   userName.textContent = nameInput.value;
   userDesc.textContent = jobInput.value;
+  patchProfile(nameInput.value, jobInput.value)
 }
 
 editForm.addEventListener('submit', (evt) => {
@@ -78,8 +79,7 @@ const newCardForm = document.forms.newplace;
 addButton.addEventListener('click', () => {
   newCardForm.elements.placename.value = '';
   newCardForm.elements.link.value = '';
-  hideInputError(newCardForm, newCardForm.elements.placename, validationConfig);
-  hideInputError(newCardForm, newCardForm.elements.link, validationConfig);
+  clearValidation(newCardForm, validationConfig)
   openPopup(popupNewCard);
 })
 
@@ -108,4 +108,25 @@ function openPopImage(link, desc){
 
 
 //7 sprint
-enableValidation();
+
+
+enableValidation(validationConfig);
+//API
+
+
+const USERS_CARDS = fetch(`https://nomoreparties.co/v1/${cohortId}/cards`, {
+    headers: {
+      authorization: token
+    }
+  })
+  .then(res => res.json())
+  .then(cards => {
+    console.log(cards)
+    return cards;
+  })
+
+USERS_CARDS.then(cards => {
+  cards.forEach((card) => {
+    container.append(createCard(card.name, card.link, card.name, card.likes.length, card.owner._id, deleteCard, likeCard, openPopImage));
+  })
+})
