@@ -2,6 +2,7 @@ import { createCard } from "./card";
 const cohortId = 'wff-cohort-20';
 const token = 'ef36db3a-2d19-4abf-a669-67e2f7384cff';
 
+////////////////////////------------------------------------------------
 function API() { 
  return fetch(`https://nomoreparties.co/v1/${cohortId}/users/me`, {
     method: 'GET',
@@ -9,26 +10,9 @@ function API() {
       authorization: token
     }
   })
-  .then(res => res.json())
-  .then(data => {
-    return data;
-  })
+  .then(res => res.json());
 }
 
-const user = API();
-
-const myUserId = user.then((data) => {
-  return data._id
-})
-
-console.log(myUserId)
-
-function idCheck (myID, anyId) {
-  if(myID === anyId)
-    return true
-  else
-    return false
-}
 
 //Patch имя и описания профиля
  function patchProfile (name, about)  {
@@ -47,7 +31,7 @@ function idCheck (myID, anyId) {
 }
 
 //POST карточки
-function  postCard() {
+function  postCard(cardName, cardLink) {
   fetch(`https://nomoreparties.co/v1/${cohortId}/cards`, {
     method: 'POST',
     headers: {
@@ -55,11 +39,10 @@ function  postCard() {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      name: 'Ярославль',
-      link: 'https://avatars.mds.yandex.net/get-marketcms/1490511/img-e1a979a5-476b-4375-bae7-55a045729703.jpeg/optimize'
+      name: cardName,
+      link: cardLink
     })
   })
 }
 
-export {patchProfile, cohortId, token, myUserId, idCheck}
-// postCard();
+export {patchProfile, cohortId, token, postCard, API}

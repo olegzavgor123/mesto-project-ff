@@ -2,7 +2,7 @@ import { initialCards } from './cards.js'
 import { createCard, deleteCard, likeCard } from './card.js'
 import { openPopup, closePopup } from './modal.js'
 import {enableValidation, validationConfig, clearValidation} from './validation.js'
-import { patchProfile, cohortId, token } from './api.js'
+import { patchProfile, cohortId, token, postCard, API } from './api.js'
 import '../pages/index.css';
 
 const container = document.querySelector('.places__list');
@@ -91,7 +91,7 @@ addCardForm.addEventListener('submit', (evt)=> {
   evt.preventDefault();
   const nameCard = addCardForm.elements.placename.value;
   const link = addCardForm.elements.link.value;
-
+  postCard(nameCard, link);
   container.prepend(createCard(nameCard,link, '', deleteCard, likeCard, openPopImage))
   closePopup(popupNewCard);
   evt.target.reset();
@@ -108,25 +108,33 @@ function openPopImage(link, desc){
 
 
 //7 sprint
-
-
 enableValidation(validationConfig);
 //API
 
 
-const USERS_CARDS = fetch(`https://nomoreparties.co/v1/${cohortId}/cards`, {
+const USERS_CARDS = () => fetch(`https://nomoreparties.co/v1/${cohortId}/cards`, {
     headers: {
       authorization: token
     }
   })
-  .then(res => res.json())
-  .then(cards => {
-    console.log(cards)
-    return cards;
-  })
+  .then(res => res.json());
 
-USERS_CARDS.then(cards => {
+
+Promise.all([
+  USERS_CARDS(), 
+  API()
+]).then(([cards, myData]) => {
   cards.forEach((card) => {
-    container.append(createCard(card.name, card.link, card.name, card.likes.length, card.owner._id, deleteCard, likeCard, openPopImage));
+    container.append(createCard({
+      name: card.name,
+      link: card.link,
+      alt: card.name,
+      likeCounter: card.likes.length,
+      userId: card.owner._id,
+      myData,
+      deleteCard,
+      likeCard,
+      openPopImage
+    }));
   })
 })

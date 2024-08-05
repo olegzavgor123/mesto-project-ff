@@ -1,6 +1,6 @@
-import { idCheck, myUserId } from "./api";
+import { idCheck, API } from "./api";
 
-function createCard (name, link, alt, likeCounter, userId, deleteCard, likeCard, openPopImage){
+function createCard ({name, link, alt, likeCounter, userId, myData, deleteCard, likeCard, openPopImage}){
   const cardTemplate = document.querySelector('#card-template').content;
   const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true);
   const cardImage = cardElement.querySelector('.card__image');
@@ -11,15 +11,13 @@ function createCard (name, link, alt, likeCounter, userId, deleteCard, likeCard,
   cardElement.querySelector('.card__title').textContent = name;
 
   const deleteButton = cardElement.querySelector('.card__delete-button');
-  console.log(userId);
-  console.log(idCheck(myUserId, userId))
 
-  if (idCheck(myUserId, userId)) {
+  if (myData._id === userId) {
     deleteButton.classList.add('card__delete-button-active')
     deleteButton.addEventListener('click', () => { deleteCard(cardElement) });
   }
-  
 
+   
   const cardLikeButton = cardElement.querySelector('.card__like-button');
   cardLikeButton.addEventListener('click', ()=> {likeCard(cardLikeButton)})
 
