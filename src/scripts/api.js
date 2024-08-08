@@ -1,85 +1,121 @@
+import {loader} from "./index";
 
-const cohortId = 'wff-cohort-20';
-const token = 'ef36db3a-2d19-4abf-a669-67e2f7384cff';
-
-////////////////////////------------------------------------------------
-function API() { 
- return fetch(`https://nomoreparties.co/v1/${cohortId}/users/me`, {
-    method: 'GET',
-    headers: {
-      authorization: token
-    }
-  })
-  .then(res => res.json());
+const config = {
+  baseUrl: 'https://nomoreparties.co/v1/wff-cohort-20',
+  headers: {
+    authorization: 'ef36db3a-2d19-4abf-a669-67e2f7384cff',
+    'Content-Type': 'application/json'
+  }
 }
 
+//Обработка промиса
+const processData = (res) => {
+  if (res.ok) {
+    return res.json();
+  } 
+    return Promise.reject(`Ошибка запроса: ${res.status}`)
+}
+
+//Информация о пользователе
+const getUserInfo = () =>  { 
+ return fetch(`${config.baseUrl}/users/me`, {
+    method: 'GET',
+    headers: config.headers
+  })
+  .then(processData);
+}
+
+//Отображение карточек
+const USERS_CARDS = () => fetch(`${config.baseUrl}/cards`, {
+  headers: config.headers
+})
+.then(processData)
+.catch((err) => {
+  console.error(err)
+})
 
 //Patch имя и описания профиля
- function patchProfile (name, about)  {
-  fetch(`https://nomoreparties.co/v1/${cohortId}/users/me`, {
+ const patchProfile = (name, about, button) => {
+  button.textContent = 'Сохранение...'
+  fetch(`${config.baseUrl}/users/me`, {
     method: 'PATCH',
-    headers: {
-      authorization: token,
-      'Content-Type': 'application/json'
-    },
+    headers: config.headers,
     body: JSON.stringify({
       name: name,
       about: about
     })
   })
+  .then(processData)
+  .catch((err) => {
+    console.error(err)
+  })
+  .finally(() => {
+    button.textContent = 'Сохранить'
+  })
 }
 
 //POST карточки
-function postCard(cardName, cardLink) {
-  fetch(`https://nomoreparties.co/v1/${cohortId}/cards`, {
+const postCard = (cardName, cardLink, button) => {
+  button.textContent = 'Сохранение...'
+  fetch(`${config.baseUrl}/cards`, {
     method: 'POST',
-    headers: {
-      authorization: token,
-      'Content-Type': 'application/json'
-    },
+    headers: config.headers,
     body: JSON.stringify({
       name: cardName,
       link: cardLink
     })
   })
+  .then(processData)
+  .catch((err) => {
+    console.error(err)
+  })
+  .finally(() => {
+    button.textContent = 'Сохранить'
+  })
 }
 
 //Like Карточки
-function PutLikeCard(id) {
- return fetch(`https://nomoreparties.co/v1/${cohortId}/cards/likes/${id}`,{
+const PutLikeCard = (id) => {
+ return fetch(`${config.baseUrl}/card/likes/${id}`,{
     method: 'PUT',
-    headers: {
-      authorization: token,
-      'Content-Type': 'application/json'
-    }
+    headers: config.headers
   })
-  .then(res => res.json());
+  .then(processData)
+  .catch((err) => {
+    console.error(err)
+  })
 }
 
-function removeLikeCard(id) {
-  return fetch(`https://nomoreparties.co/v1/${cohortId}/cards/likes/${id}`,{
+//Дизлайк карточки
+const removeLikeCard = (id) => {
+  return fetch(`${config.baseUrl}/cards/likes/${id}`,{
     method: 'DELETE',
-    headers: {
-      authorization: token,
-      'Content-Type': 'application/json'
-    }
+    headers: config.headers
   })
-  .then(res => res.json());
+  .then(processData)
+  .catch((err) => {
+    console.error(err)
+  })
 }
 
 //Редактировать Аву
-function PatchProfileImage(link) {
-  fetch(`https://nomoreparties.co/v1/${cohortId}/users/me/avatar`, {
+const PatchProfileImage = (link, button) => {
+  button.textContent = 'Сохранение...'
+  fetch(`${config.baseUrl}/users/me/avatar`, {
     method: 'PATCH',
-    headers: {
-      authorization: token,
-      'Content-Type': 'application/json'
-    },
+    headers: config.headers,
     body: JSON.stringify({
       avatar: link
     })
   })
+  .then(processData)
+  .catch((err) => {
+    console.error(err)
+  })
+  .finally(() => {
+    button.textContent = 'Сохранить'
+  })
 }
 
 
-export {patchProfile, cohortId, token, postCard, API, PutLikeCard, removeLikeCard, PatchProfileImage}
+export {patchProfile, USERS_CARDS, postCard, getUserInfo, PutLikeCard, removeLikeCard, PatchProfileImage}

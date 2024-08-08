@@ -1,8 +1,7 @@
-import { initialCards } from './cards.js'
 import { createCard, deleteCard, likeCard } from './card.js'
 import { openPopup, closePopup } from './modal.js'
 import {enableValidation, validationConfig, clearValidation} from './validation.js'
-import { patchProfile, cohortId, token, postCard, API, PatchProfileImage } from './api.js'
+import { patchProfile, USERS_CARDS, postCard, getUserInfo, PatchProfileImage } from './api.js'
 import '../pages/index.css';
 
 const container = document.querySelector('.places__list');
@@ -10,6 +9,9 @@ const popupTypeImage = document.querySelector('.popup_type_image');
 
 //Кнопка редактирования аватара
 const profileImageEditButton = document.querySelector('.profile__image-edit-button');
+
+const profileImage = document.querySelector('.profile__image');
+const popupProfileImageEdit = document.querySelector('.popup_type_avatar');
 
 //Имя и описание по умолчанию
 const userName = document.querySelector('.profile__title');
@@ -29,6 +31,8 @@ const editPopup = document.querySelector('.popup_type_edit');
 const editButton = document.querySelector('.profile__edit-button');
 const popups = document.querySelectorAll('.popup');
 
+
+//Загрузка аватара, имени и описания с сервера
 
 //Закрытие попапа по крестику
 const closeButtons = document.querySelectorAll('.popup__close');
@@ -58,12 +62,11 @@ editButton.addEventListener('click', ()=> {
 
 
 //Редактирование кнопкой сохранить
-
 function handleProfileFormSubmit(evt) {
-  evt.preventDefault(); 
+  evt.preventDefault();
   userName.textContent = nameInput.value;
   userDesc.textContent = jobInput.value;
-  patchProfile(nameInput.value, jobInput.value)
+  patchProfile(nameInput.value, jobInput.value, editForm.elements.button)
 }
 
 editForm.addEventListener('submit', (evt) => {
@@ -73,14 +76,12 @@ editForm.addEventListener('submit', (evt) => {
 
 //Открытие попапа редактирования аватарки и её patch
 profileImageEditButton.addEventListener('click', () => {
-  const profileImage = document.querySelector('.profile__image');
-  const popupProfileImageEdit = document.querySelector('.popup_type_avatar');
   const editImageProfieForm = document.forms.editImageProfile;
   openPopup(popupProfileImageEdit);
   editImageProfieForm.addEventListener('submit', (evt)=> {
     evt.preventDefault();
     profileImage.style.backgroundImage = `url(${editImageProfieForm.elements.link.value})`;
-    PatchProfileImage(editImageProfieForm.elements.link.value);
+    PatchProfileImage(editImageProfieForm.elements.link.value, editImageProfieForm.elements.button);
     closePopup(popupProfileImageEdit);
   })
 })
@@ -102,11 +103,11 @@ addButton.addEventListener('click', () => {
 const addCardForm = document.forms.newplace;
 
 addCardForm.addEventListener('submit', (evt)=> {
-  evt.preventDefault();
+  // evt.preventDefault();
   const nameCard = addCardForm.elements.placename.value;
   const link = addCardForm.elements.link.value;
-  postCard(nameCard, link);
-  container.prepend(createCard(nameCard,link, '', deleteCard, likeCard, openPopImage))
+  postCard(nameCard, link, addCardForm.elements.button);
+  // container.prepend(createCard(nameCard, link, '', deleteCard, likeCard, openPopImage))
   closePopup(popupNewCard);
   evt.target.reset();
 })
@@ -122,21 +123,13 @@ function openPopImage(link, desc){
 
 
 //7 sprint
+//Валидация всех форм
 enableValidation(validationConfig);
 //API
 
-
-const USERS_CARDS = () => fetch(`https://nomoreparties.co/v1/${cohortId}/cards`, {
-    headers: {
-      authorization: token
-    }
-  })
-  .then(res => res.json());
-
-
 Promise.all([
   USERS_CARDS(), 
-  API()
+  getUserInfo()
 ]).then(([cards, myData]) => {
   cards.forEach((card) => {
     container.append(createCard({
@@ -152,8 +145,22 @@ Promise.all([
       openPopImage
     }));
   })
+
+  profileImage.style.backgroundImage = `url(${myData.avatar})`;
+  userName.textContent = myData.name;
+  userDesc.textContent = myData.about;
+  console.log(myData)
+})
+.catch((err) => {
+  console.error(err)
 })
 
-//Редактировать аву
+//Лоадер
+function loader(button, isLoading) {
+  if (isLoading)
+    button.textContent = 'Сохранение...';
+  else
+    button.textContent = 'Сохранить';
+}
 
-export {USERS_CARDS}
+export {USERS_CARDS, loader}

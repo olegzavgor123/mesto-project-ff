@@ -1,4 +1,4 @@
-import { idCheck, API, PutLikeCard, removeLikeCard } from "./api";
+import { PutLikeCard, removeLikeCard } from "./api";
 
 function createCard ({name, link, alt, likeCounter, userId, myData, cardId, deleteCard, likeCard, openPopImage}){
   const cardTemplate = document.querySelector('#card-template').content;
@@ -10,7 +10,7 @@ function createCard ({name, link, alt, likeCounter, userId, myData, cardId, dele
   cardImage.src = link;
   cardImage.alt = alt;
   cardElement.querySelector('.card__title').textContent = name;
- 
+  
   const deleteButton = cardElement.querySelector('.card__delete-button');
   if (myData._id === userId) {
     deleteButton.classList.add('card__delete-button-active')
