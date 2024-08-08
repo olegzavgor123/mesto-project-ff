@@ -14,7 +14,11 @@
   </header>
   <main class="content">
     <section class="profile page__section">
-      <div class="profile__image" style="background-image: url(<%=require('./images/avatar.jpg')%>);"></div>
+      <div class="profile__image" style="background-image: url(<%=require('./images/avatar.jpg')%>);">
+        <div class="overlay">
+          <button class="profile__image-edit-button" type="button"></button>
+        </div>
+      </div>
       <div class="profile__info">
         <h1 class="profile__title">Жак-Ив Кусто</h1>
         <button class="profile__edit-button" type="button"></button>
@@ -32,6 +36,19 @@
       © 2021 Mesto Russia
     </p>
   </footer>
+  <div class="popup popup_type_avatar popup_is-animated">
+    <div class="popup__content">
+      <button type="button" class="popup__close"></button>
+      <h3 class="popup__title">Обновить аватар</h3>
+      <form class="popup__form" name="editImageProfile" novalidate>
+        <label class="form__field">
+          <input type="url" name="link" id="link__image-input" class="popup__input popup__input_type_name" placeholder="Ссылка на картику" required>
+          <span class="form__input-error link__image-input-error"></span>
+        </label>
+        <button type="submit" class="button popup__button">Сохранить</button>
+      </form>
+    </div>
+  </div>
   <div class="popup popup_type_edit popup_is-animated">
     <div class="popup__content">
       <button type="button" class="popup__close"></button>

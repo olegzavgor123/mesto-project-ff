@@ -2,11 +2,14 @@ import { initialCards } from './cards.js'
 import { createCard, deleteCard, likeCard } from './card.js'
 import { openPopup, closePopup } from './modal.js'
 import {enableValidation, validationConfig, clearValidation} from './validation.js'
-import { patchProfile, cohortId, token, postCard, API } from './api.js'
+import { patchProfile, cohortId, token, postCard, API, PatchProfileImage } from './api.js'
 import '../pages/index.css';
 
 const container = document.querySelector('.places__list');
 const popupTypeImage = document.querySelector('.popup_type_image');
+
+//Кнопка редактирования аватара
+const profileImageEditButton = document.querySelector('.profile__image-edit-button');
 
 //Имя и описание по умолчанию
 const userName = document.querySelector('.profile__title');
@@ -18,9 +21,6 @@ const editForm = document.forms.editprofile;
 const nameInput = editForm.elements.name;
 const jobInput = editForm.elements.description;
 
-// initialCards.forEach((item) => {
-//   container.append(createCard(item.name, item.link, item.alt, deleteCard, likeCard, openPopImage));
-// })
 
 
 //6 sprint
@@ -69,6 +69,20 @@ function handleProfileFormSubmit(evt) {
 editForm.addEventListener('submit', (evt) => {
   handleProfileFormSubmit(evt);
   closePopup(editPopup);
+})
+
+//Открытие попапа редактирования аватарки и её patch
+profileImageEditButton.addEventListener('click', () => {
+  const profileImage = document.querySelector('.profile__image');
+  const popupProfileImageEdit = document.querySelector('.popup_type_avatar');
+  const editImageProfieForm = document.forms.editImageProfile;
+  openPopup(popupProfileImageEdit);
+  editImageProfieForm.addEventListener('submit', (evt)=> {
+    evt.preventDefault();
+    profileImage.style.backgroundImage = `url(${editImageProfieForm.elements.link.value})`;
+    PatchProfileImage(editImageProfieForm.elements.link.value);
+    closePopup(popupProfileImageEdit);
+  })
 })
 
 
@@ -132,9 +146,14 @@ Promise.all([
       likeCounter: card.likes.length,
       userId: card.owner._id,
       myData,
+      cardId: card._id,
       deleteCard,
       likeCard,
       openPopImage
     }));
   })
 })
+
+//Редактировать аву
+
+export {USERS_CARDS}
