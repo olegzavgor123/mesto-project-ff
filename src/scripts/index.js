@@ -1,7 +1,7 @@
 import { createCard, deleteCard, likeCard } from './card.js'
 import { openPopup, closePopup } from './modal.js'
-import {enableValidation, validationConfig, clearValidation} from './validation.js'
-import { patchProfile, USERS_CARDS, postCard, getUserInfo, PatchProfileImage } from './api.js'
+import { enableValidation, validationConfig, clearValidation } from './validation.js'
+import { patchProfile, USERS_CARDS, postCard, getUserInfo, patchProfileImage } from './api.js'
 import '../pages/index.css';
 
 const container = document.querySelector('.places__list');
@@ -26,7 +26,6 @@ const jobInput = editForm.elements.description;
 
 
 //6 sprint
-
 const editPopup = document.querySelector('.popup_type_edit');
 const editButton = document.querySelector('.profile__edit-button');
 const popups = document.querySelectorAll('.popup');
@@ -81,7 +80,7 @@ profileImageEditButton.addEventListener('click', () => {
   editImageProfieForm.addEventListener('submit', (evt)=> {
     evt.preventDefault();
     profileImage.style.backgroundImage = `url(${editImageProfieForm.elements.link.value})`;
-    PatchProfileImage(editImageProfieForm.elements.link.value, editImageProfieForm.elements.button);
+    patchProfileImage(editImageProfieForm.elements.link.value, editImageProfieForm.elements.button);
     closePopup(popupProfileImageEdit);
   })
 })
@@ -103,11 +102,24 @@ addButton.addEventListener('click', () => {
 const addCardForm = document.forms.newplace;
 
 addCardForm.addEventListener('submit', (evt)=> {
-  // evt.preventDefault();
+  evt.preventDefault();
   const nameCard = addCardForm.elements.placename.value;
   const link = addCardForm.elements.link.value;
-  postCard(nameCard, link, addCardForm.elements.button);
-  // container.prepend(createCard(nameCard, link, '', deleteCard, likeCard, openPopImage))
+  postCard(nameCard, link, addCardForm.elements.button)
+  .then((data) => {
+    container.prepend(createCard({
+      name: data.name,
+      link: data.link,
+      alt: data.name,
+      likeCounter: data.likes.length,
+      userId: data.owner._id,
+      myData: data.owner,
+      cardId: data._id,
+      deleteCard,
+      likeCard,
+      openPopImage
+    })); 
+  })
   closePopup(popupNewCard);
   evt.target.reset();
 })
@@ -139,6 +151,7 @@ Promise.all([
       likeCounter: card.likes.length,
       userId: card.owner._id,
       myData,
+      dataLikes: card.likes,
       cardId: card._id,
       deleteCard,
       likeCard,
@@ -149,18 +162,10 @@ Promise.all([
   profileImage.style.backgroundImage = `url(${myData.avatar})`;
   userName.textContent = myData.name;
   userDesc.textContent = myData.about;
-  console.log(myData)
 })
 .catch((err) => {
   console.error(err)
 })
 
-//Лоадер
-function loader(button, isLoading) {
-  if (isLoading)
-    button.textContent = 'Сохранение...';
-  else
-    button.textContent = 'Сохранить';
-}
 
-export {USERS_CARDS, loader}
+export {USERS_CARDS}

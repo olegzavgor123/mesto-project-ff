@@ -1,5 +1,3 @@
-import {loader} from "./index";
-
 const config = {
   baseUrl: 'https://nomoreparties.co/v1/wff-cohort-20',
   headers: {
@@ -16,6 +14,7 @@ const processData = (res) => {
     return Promise.reject(`Ошибка запроса: ${res.status}`)
 }
 
+
 //Информация о пользователе
 const getUserInfo = () =>  { 
  return fetch(`${config.baseUrl}/users/me`, {
@@ -25,6 +24,7 @@ const getUserInfo = () =>  {
   .then(processData);
 }
 
+
 //Отображение карточек
 const USERS_CARDS = () => fetch(`${config.baseUrl}/cards`, {
   headers: config.headers
@@ -33,6 +33,7 @@ const USERS_CARDS = () => fetch(`${config.baseUrl}/cards`, {
 .catch((err) => {
   console.error(err)
 })
+
 
 //Patch имя и описания профиля
  const patchProfile = (name, about, button) => {
@@ -54,10 +55,11 @@ const USERS_CARDS = () => fetch(`${config.baseUrl}/cards`, {
   })
 }
 
+
 //POST карточки
 const postCard = (cardName, cardLink, button) => {
   button.textContent = 'Сохранение...'
-  fetch(`${config.baseUrl}/cards`, {
+  return fetch(`${config.baseUrl}/cards`, {
     method: 'POST',
     headers: config.headers,
     body: JSON.stringify({
@@ -65,7 +67,7 @@ const postCard = (cardName, cardLink, button) => {
       link: cardLink
     })
   })
-  .then(processData)
+  .then((res) => res.json())
   .catch((err) => {
     console.error(err)
   })
@@ -74,9 +76,23 @@ const postCard = (cardName, cardLink, button) => {
   })
 }
 
+
+//Delete карточки
+const deleteCardOnServ = (id) => {
+  fetch(`${config.baseUrl}/cards/${id}`, {
+    method: 'DELETE',
+    headers: config.headers
+  })
+  .then(processData)
+  .catch((err) => {
+    console.error(err)
+  })
+}
+
+
 //Like Карточки
-const PutLikeCard = (id) => {
- return fetch(`${config.baseUrl}/card/likes/${id}`,{
+const putLikeCard = (id) => {
+ return fetch(`${config.baseUrl}/cards/likes/${id}`,{
     method: 'PUT',
     headers: config.headers
   })
@@ -85,6 +101,7 @@ const PutLikeCard = (id) => {
     console.error(err)
   })
 }
+
 
 //Дизлайк карточки
 const removeLikeCard = (id) => {
@@ -98,8 +115,9 @@ const removeLikeCard = (id) => {
   })
 }
 
+
 //Редактировать Аву
-const PatchProfileImage = (link, button) => {
+const patchProfileImage = (link, button) => {
   button.textContent = 'Сохранение...'
   fetch(`${config.baseUrl}/users/me/avatar`, {
     method: 'PATCH',
@@ -118,4 +136,4 @@ const PatchProfileImage = (link, button) => {
 }
 
 
-export {patchProfile, USERS_CARDS, postCard, getUserInfo, PutLikeCard, removeLikeCard, PatchProfileImage}
+export {patchProfile, USERS_CARDS, postCard, getUserInfo, putLikeCard, removeLikeCard, patchProfileImage, deleteCardOnServ}
