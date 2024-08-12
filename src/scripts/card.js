@@ -38,23 +38,35 @@ function createCard ({name, link, alt, likeCounter, userId, myData, cardId, data
 
 //Удаление карточки
 function deleteCard(item, cardId) {
-  item.remove();
-  deleteCardOnServ(cardId);
+  deleteCardOnServ(cardId)
+  .then(() => {
+    item.remove();
+  })
+  .catch((err) => {
+    console.error(err);
+  })
 } 
 
 //Лайк карточки
 function likeCard(card, cardId, likeCount){
-  card.classList.toggle('card__like-button_is-active');
   if (card.classList.contains('card__like-button_is-active')) {
-    putLikeCard(cardId)
-    .then(res => {
-      likeCount.textContent = res.likes.length;
-    });
-  } else {
     removeLikeCard(cardId)
     .then(res => {
       likeCount.textContent = res.likes.length;
+      card.classList.toggle('card__like-button_is-active');
     })
+    .catch((err) => {
+      console.error(err);
+    });
+  } else {
+    putLikeCard(cardId)
+    .then(res => {
+      likeCount.textContent = res.likes.length;
+      card.classList.toggle('card__like-button_is-active');
+    })
+    .catch((err) => {
+      console.error(err);
+    });
   }
 }
 

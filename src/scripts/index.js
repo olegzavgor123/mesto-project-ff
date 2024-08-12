@@ -1,7 +1,7 @@
 import { createCard, deleteCard, likeCard } from './card.js'
 import { openPopup, closePopup } from './modal.js'
-import { enableValidation, validationConfig, clearValidation } from './validation.js'
-import { patchProfile, USERS_CARDS, postCard, getUserInfo, patchProfileImage } from './api.js'
+import { enableValidation, clearValidation } from './validation.js'
+import { patchProfile, getUsersCards, postCard, getUserInfo, patchProfileImage } from './api.js'
 import '../pages/index.css';
 
 const container = document.querySelector('.places__list');
@@ -9,6 +9,9 @@ const popupTypeImage = document.querySelector('.popup_type_image');
 
 //Кнопка редактирования аватара
 const profileImageEditButton = document.querySelector('.profile__image-edit-button');
+//Форма
+const editImageProfieForm = document.forms.editImageProfile;
+
 
 const profileImage = document.querySelector('.profile__image');
 const popupProfileImageEdit = document.querySelector('.popup_type_avatar');
@@ -63,28 +66,42 @@ editButton.addEventListener('click', ()=> {
 //Редактирование кнопкой сохранить
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
-  userName.textContent = nameInput.value;
-  userDesc.textContent = jobInput.value;
-  patchProfile(nameInput.value, jobInput.value, editForm.elements.button)
+  patchProfile(nameInput.value, jobInput.value)
+  .then((data) => {
+    userName.textContent = data.name;
+    userDesc.textContent = data.about;
+    closePopup(editPopup);
+  })
+  .catch((err) => {
+    console.error(err);
+  })
+  .finally(() => {
+    editForm.elements.button.textContent = 'Сохранить'
+  })
 }
 
 editForm.addEventListener('submit', (evt) => {
+  editForm.elements.button.textContent = 'Сохранение...'
   handleProfileFormSubmit(evt);
-  closePopup(editPopup);
 })
 
 //Открытие попапа редактирования аватарки и её patch
 profileImageEditButton.addEventListener('click', () => {
-  const editImageProfieForm = document.forms.editImageProfile;
   openPopup(popupProfileImageEdit);
-  editImageProfieForm.addEventListener('submit', (evt)=> {
-    evt.preventDefault();
-    profileImage.style.backgroundImage = `url(${editImageProfieForm.elements.link.value})`;
-    patchProfileImage(editImageProfieForm.elements.link.value, editImageProfieForm.elements.button);
-    closePopup(popupProfileImageEdit);
-  })
 })
 
+editImageProfieForm.addEventListener('submit', (evt)=> {
+  evt.preventDefault();
+  editImageProfieForm.elements.button.textContent = 'Сохранение...'
+  patchProfileImage(editImageProfieForm.elements.link.value)
+  .then(() => {
+    profileImage.style.backgroundImage = `url(${editImageProfieForm.elements.link.value})`;
+    closePopup(popupProfileImageEdit);
+  })
+  .finally(() => {
+    editImageProfieForm.elements.button.textContent = 'Сохранить'
+  })
+})
 
 //Открытие формы добавления карточки
 const addButton = document.querySelector('.profile__add-button');
@@ -105,7 +122,8 @@ addCardForm.addEventListener('submit', (evt)=> {
   evt.preventDefault();
   const nameCard = addCardForm.elements.placename.value;
   const link = addCardForm.elements.link.value;
-  postCard(nameCard, link, addCardForm.elements.button)
+  addCardForm.elements.button.textContent = 'Сохранение...'
+  postCard(nameCard, link)
   .then((data) => {
     container.prepend(createCard({
       name: data.name,
@@ -118,10 +136,12 @@ addCardForm.addEventListener('submit', (evt)=> {
       deleteCard,
       likeCard,
       openPopImage
-    })); 
+    }));
+    closePopup(popupNewCard);
   })
-  closePopup(popupNewCard);
-  evt.target.reset();
+  .finally(() => {
+    addCardForm.elements.button.textContent = 'Сохранить'
+  })
 })
 
 //Попап картинки
@@ -136,11 +156,21 @@ function openPopImage(link, desc){
 
 //7 sprint
 //Валидация всех форм
-enableValidation(validationConfig);
-//API
+const validationConfig = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.button',
+  inactiveButtonClass: 'button_inactive',
+  inputErrorClass: 'form__input_type_error',
+  errorClass: 'form__input-error_active'
+};
 
+enableValidation(validationConfig);
+
+
+//API
 Promise.all([
-  USERS_CARDS(), 
+  getUsersCards(), 
   getUserInfo()
 ]).then(([cards, myData]) => {
   cards.forEach((card) => {
@@ -158,7 +188,6 @@ Promise.all([
       openPopImage
     }));
   })
-
   profileImage.style.backgroundImage = `url(${myData.avatar})`;
   userName.textContent = myData.name;
   userDesc.textContent = myData.about;
@@ -166,6 +195,3 @@ Promise.all([
 .catch((err) => {
   console.error(err)
 })
-
-
-export {USERS_CARDS}

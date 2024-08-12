@@ -1,11 +1,4 @@
-const validationConfig = {
-  formSelector: '.popup__form',
-  inputSelector: '.popup__input',
-  submitButtonSelector: '.button',
-  inactiveButtonClass: 'button_inactive',
-  inputErrorClass: 'form__input_type_error',
-  errorClass: 'form__input-error_active'
-};
+
 
 //Проходим по всем формам
 function enableValidation(settings) {
@@ -59,6 +52,7 @@ function hideInputError(formElement, inputElement, settings) {
   errorElem.textContent = '';
   inputElement.classList.remove(settings.inputErrorClass);
   errorElem.classList.remove(settings.errorClass);
+  inputElement.setCustomValidity("");
 }
 
 
@@ -90,4 +84,4 @@ function clearValidation(formElement, settings) {
   toggleButtonState(inputList, buttonElement, settings);
 }
 
-export {clearValidation ,validationConfig, enableValidation, setEventListener, checkInputValidation, showInputError, hideInputError}
+export {clearValidation, enableValidation}

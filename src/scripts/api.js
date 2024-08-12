@@ -26,19 +26,16 @@ const getUserInfo = () =>  {
 
 
 //Отображение карточек
-const USERS_CARDS = () => fetch(`${config.baseUrl}/cards`, {
-  headers: config.headers
-})
-.then(processData)
-.catch((err) => {
-  console.error(err)
-})
-
+const getUsersCards = () => {
+  return fetch(`${config.baseUrl}/cards`, {
+    headers: config.headers
+  })
+  .then(processData)
+}
 
 //Patch имя и описания профиля
- const patchProfile = (name, about, button) => {
-  button.textContent = 'Сохранение...'
-  fetch(`${config.baseUrl}/users/me`, {
+ const patchProfile = (name, about) => {
+  return fetch(`${config.baseUrl}/users/me`, {
     method: 'PATCH',
     headers: config.headers,
     body: JSON.stringify({
@@ -47,18 +44,12 @@ const USERS_CARDS = () => fetch(`${config.baseUrl}/cards`, {
     })
   })
   .then(processData)
-  .catch((err) => {
-    console.error(err)
-  })
-  .finally(() => {
-    button.textContent = 'Сохранить'
-  })
 }
 
 
 //POST карточки
-const postCard = (cardName, cardLink, button) => {
-  button.textContent = 'Сохранение...'
+const postCard = (cardName, cardLink) => {
+  // button.textContent = 'Сохранение...'
   return fetch(`${config.baseUrl}/cards`, {
     method: 'POST',
     headers: config.headers,
@@ -68,25 +59,16 @@ const postCard = (cardName, cardLink, button) => {
     })
   })
   .then((res) => res.json())
-  .catch((err) => {
-    console.error(err)
-  })
-  .finally(() => {
-    button.textContent = 'Сохранить'
-  })
 }
 
 
 //Delete карточки
 const deleteCardOnServ = (id) => {
-  fetch(`${config.baseUrl}/cards/${id}`, {
+  return fetch(`${config.baseUrl}/cards/${id}`, {
     method: 'DELETE',
     headers: config.headers
   })
   .then(processData)
-  .catch((err) => {
-    console.error(err)
-  })
 }
 
 
@@ -97,9 +79,6 @@ const putLikeCard = (id) => {
     headers: config.headers
   })
   .then(processData)
-  .catch((err) => {
-    console.error(err)
-  })
 }
 
 
@@ -110,16 +89,13 @@ const removeLikeCard = (id) => {
     headers: config.headers
   })
   .then(processData)
-  .catch((err) => {
-    console.error(err)
-  })
 }
 
 
 //Редактировать Аву
-const patchProfileImage = (link, button) => {
-  button.textContent = 'Сохранение...'
-  fetch(`${config.baseUrl}/users/me/avatar`, {
+const patchProfileImage = (link) => {
+  // button.textContent = 'Сохранение...'
+  return fetch(`${config.baseUrl}/users/me/avatar`, {
     method: 'PATCH',
     headers: config.headers,
     body: JSON.stringify({
@@ -127,13 +103,8 @@ const patchProfileImage = (link, button) => {
     })
   })
   .then(processData)
-  .catch((err) => {
-    console.error(err)
-  })
-  .finally(() => {
-    button.textContent = 'Сохранить'
-  })
+
 }
 
 
-export {patchProfile, USERS_CARDS, postCard, getUserInfo, putLikeCard, removeLikeCard, patchProfileImage, deleteCardOnServ}
+export {patchProfile, getUsersCards, postCard, getUserInfo, putLikeCard, removeLikeCard, patchProfileImage, deleteCardOnServ}
